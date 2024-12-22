@@ -1,37 +1,35 @@
-# users/forms.py
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
+from django.contrib.auth.forms import AuthenticationForm
+from .models import User
 
-# Signup form (user registration)
-class SignupForm(UserCreationForm):
-    email = forms.EmailField(required=True)
-    first_name = forms.CharField(max_length=30, required=True)  
-    last_name = forms.CharField(max_length=30, required=True)  
-
+class SignupForm(forms.ModelForm):
+    password_confirmation = forms.CharField(widget=forms.PasswordInput, label="Confirm Password")
+    
     class Meta:
         model = User
-        fields = ('username', 'first_name', 'last_name', 'email', 'password1', 'password2')  # Fields to be shown in the form
+        fields = ['nom', 'prenom', 'email', 'password', 'photo']
+        widgets = {
+            'password': forms.PasswordInput(),
+        }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['username'].widget.attrs.update({'class': 'form-control'})  # Add Bootstrap class to fields
-        self.fields['password1'].widget.attrs.update({'class': 'form-control'})
-        self.fields['password2'].widget.attrs.update({'class': 'form-control'})
-        self.fields['email'].widget.attrs.update({'class': 'form-control'})
-        self.fields['first_name'].widget.attrs.update({'class': 'form-control'})
-        self.fields['last_name'].widget.attrs.update({'class': 'form-control'})
-
-
-# Login form (user authentication)
-class LoginForm(AuthenticationForm):
-    class Meta:
-        model = User
-        fields = ['username', 'password']
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['username'].widget.attrs.update({'class': 'form-control'})
-        self.fields['password'].widget.attrs.update({'class': 'form-control'})
+    def clean_password_confirmation(self):
+        password = self.cleaned_data.get('password')
+        password_confirmation = self.cleaned_data.get('password_confirmation')
+        if password != password_confirmation:
+            raise forms.ValidationError("Passwords do not match.")
+        return password_confirmation
 
 
+class LoginForm(forms.Form):
+    email = forms.EmailField(label='Email', max_length=255)
+    password = forms.CharField(label='Password', widget=forms.PasswordInput)
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        return email
+
+    def clean_password(self):
+        password = self.cleaned_data.get('password')
+        if len(password) < 6:
+            raise ValidationError("Password must be at least 6 characters long.")
+        return password
