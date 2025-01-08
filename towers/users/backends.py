@@ -14,11 +14,11 @@ class EmailBackend(ModelBackend):
 
 
 
-User = get_user_model()  # This will get the custom User model, not the default one
+User = get_user_model() 
 
 def authenticate(request, email=None, password=None, **kwargs):
     try:
-        # Use the custom User model to get the user by email
+        
         user = User.objects.get(email=email)
         if user.check_password(password):
             return user

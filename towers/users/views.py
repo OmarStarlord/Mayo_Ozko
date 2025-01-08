@@ -4,6 +4,8 @@ from .forms import SignupForm
 from .models import User
 from .forms import LoginForm
 
+
+
 # Signup View
 def signup_view(request):
     if request.method == 'POST':

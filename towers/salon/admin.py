@@ -1,9 +1,14 @@
 from django.contrib import admin
+from .models import Salon, Message
+from users.models import User  
 
-# Register your models here.
-from .models import Salon 
-from .models import Message
+class SalonAdmin(admin.ModelAdmin):
+    list_display = ('name', 'created_by', 'created_at') 
+    search_fields = ('name',)  
+    filter_horizontal = ('members',)  
+    autocomplete_fields = ['created_by'] 
 
-admin.site.register(Salon)
-admin.site.register(Message)
 
+# Register the models
+admin.site.register(Salon, SalonAdmin)  
+admin.site.register(Message) 
