@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Salons</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f9f9f9;
+        }
+        .salon-list {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .salon-item {
+            border-bottom: 1px solid #eee;
+            padding: 10px 0;
+        }
+        .salon-item:last-child {
+            border-bottom: none;
+        }
+        .salon-name {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
+        }
+        .salon-meta {
+            font-size: 0.9em;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <div class="salon-list">
+        <h1>All Salons</h1>
+        {% if salons %}
+            <ul>
+                {% for salon in salons %}
+                    <li class="salon-item">
+                        <span class="salon-name">{{ salon.name }}</span>
+                        <div class="salon-meta">
+                            Created by: {{ salon.created_by.username }} | Created at: {{ salon.created_at|date:"F j, Y, g:i a" }}
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No salons available at the moment.</p>
+        {% endif %}
+    </div>
+</body>
+</html>
