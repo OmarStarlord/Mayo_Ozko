@@ -30,6 +30,20 @@ class LoginForm(forms.Form):
 
     def clean_password(self):
         password = self.cleaned_data.get('password')
-        if len(password) < 6:
-            raise ValidationError("Password must be at least 6 characters long.")
         return password
+    
+    
+class ModifyUserForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['nom', 'prenom', 'email', 'photo']
+        widgets = {
+            'password': forms.PasswordInput(),
+        }
+
+    def clean_password_confirmation(self):
+        password = self.cleaned_data.get('password')
+        password_confirmation = self.cleaned_data.get('password_confirmation')
+        if password != password_confirmation:
+            raise forms.ValidationError("Passwords do not match.")
+        return password_confirmation

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Invite to Salon</title>
+</head>
+<body>
+    <h1>Invite to {{ salon.name }}</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Invite</button>
+    </form>
+    <a href="{% url 'salons:detail' salon.id %}">Back to Salon</a>
+</body>
+</html>

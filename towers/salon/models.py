@@ -13,13 +13,20 @@ class Salon(models.Model):
         return self.name
 
 
-
 class Message(models.Model):
     id = models.AutoField(primary_key=True)  
-    salon = models.ForeignKey(Salon, on_delete=models.CASCADE, related_name='messages')  
-    user = models.ForeignKey(User, on_delete=models.CASCADE)  
-    text = models.TextField()  
+    salon = models.ForeignKey(
+        Salon,
+        on_delete=models.CASCADE,
+        related_name='messages'
+    )
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE
+    )  
+    text = models.TextField(blank=False)  # Prevent empty messages
     created_at = models.DateTimeField(auto_now_add=True)  
 
     def __str__(self):
-        return f"{self.user.username}: {self.text[:30]}"  
+        return f"{self.user.nom} {self.user.prenom}: {self.text[:30]}"  # Show nom and prenom
+

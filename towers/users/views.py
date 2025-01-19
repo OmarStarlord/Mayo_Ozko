@@ -3,6 +3,11 @@ from django.contrib.auth import authenticate, login
 from .forms import SignupForm
 from .models import User
 from .forms import LoginForm
+from .forms import ModifyUserForm
+
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import logout
+
 
 
 
@@ -55,3 +60,23 @@ def login_view(request):
 
 def success_view(request):
     return render(request, 'success.html')
+
+
+#logout view
+def logout_view(request):
+    logout(request)
+    return redirect('login')
+
+
+#modify user view
+@login_required
+def modify_user(request):
+    if request.method == 'POST':
+        form = ModifyUserForm(request.POST, request.FILES, instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('success')
+    else:
+        form = ModifyUserForm(instance=request.user)
+    return render(request, 'modify_user.html', {'form': form})
+

@@ -1,13 +1,13 @@
 from django.shortcuts import render
 from .models import Salon, Message
+from .forms import SalonForm
 
 
 def list_all_salons(request):
     salons = Salon.objects.all()  # Fetch all salons
     return render(request, 'salons/list_all.html', {'salons': salons})
 
-# Create your views here.
-#empty view
+
 def salon_view(request):
     return render(request, 'salon.html')
 
@@ -29,6 +29,7 @@ def create_salon(request):
     else:
         form = SalonForm()
     return render(request, 'salons/create.html', {'form': form})
+
 
 
 def salon_detail(request, id):
