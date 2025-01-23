@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Your Rooms</h2>
+    {% if rooms %}
+        <ul class="list-group">
+            {% for room in rooms %}
+                <li class="list-group-item">
+                    <a href="{% url 'room_detail' room.id %}">{{ room.name }}</a> 
+                    <small>Created by: {{ room.moderator.username }} on {{ room.date_created }}</small>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>You are not part of any rooms yet. Join or create a room!</p>
+    {% endif %}
+{% endblock %}
