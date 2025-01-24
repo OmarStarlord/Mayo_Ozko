@@ -6,60 +6,73 @@
         <h2>{{ room.name }}</h2>
         <p>Created by <strong>{{ room.moderator.username }}</strong> on {{ room.date_created }}</p>
         <a href="{% url 'invite_to_room' room.id %}" class="btn btn-primary">+ Invite Users</a>
+        {% if request.user == room.moderator %}
+<a href="{% url 'manage_room_users' room.id %}" class="btn btn-warning">Manage Users</a>
+{% endif %}
+   
     </div>
+
+
+
 
     <!-- Chat Messages Section -->
     <div class="chat-section">
         <h3>Chat Messages</h3>
         <div id="chat-box" class="chat-box">
             {% for message in messages %}
-                <div class="chat-message">
-                    <div class="message-header">
-                        <strong>{{ message.sender.username }}</strong>
-                        <span class="timestamp">{{ message.timestamp }}</span>
-                    </div>
-                    <p class="message-content">{{ message.content }}</p>
+            <div class="chat-message">
+                <div class="message-header">
+                    <img src="{{ message.sender.profile_pic.url }}" class="profile-pic">
+                    <strong>{{ message.sender.username }}</strong>
+                    <span class="timestamp">{{ message.timestamp }}</span>
                 </div>
+                <p class="message-content">{{ message.content }}</p>
+            </div>
             {% empty %}
-                <p class="no-messages">No messages yet. Be the first to start the conversation!</p>
+            <p class="no-messages">No messages yet. Be the first to start the conversation! 😊</p>
             {% endfor %}
         </div>
+
     </div>
 
     <!-- Message Input Form -->
     <div class="message-form-container">
-        <textarea id="chat-message-input" class="message-input" placeholder="Type your message..." required></textarea>
+        <textarea id="chat-message-input" class="message-input" placeholder="Type a message..." required></textarea>
         <button id="chat-message-submit" class="btn btn-success">Send</button>
+        <button id="emoji-button">😊</button>
     </div>
 </div>
 
+<!-- WebSocket JavaScript -->
 <script>
     const roomId = "{{ room.id }}";
     const username = "{{ request.user.username }}";
     const chatSocket = new WebSocket(`ws://${window.location.host}/ws/room/${roomId}/`);
 
     chatSocket.onmessage = function(event) {
-        const data = JSON.parse(event.data);
-        const chatBox = document.getElementById("chat-box");
-        
-        const newMessage = document.createElement("div");
-        newMessage.classList.add("chat-message");
-        newMessage.innerHTML = `
-            <div class="message-header">
-                <strong>${data.sender}</strong> <span class="timestamp">Just now</span>
-            </div>
-            <p class="message-content">${data.message}</p>
-        `;
+    const data = JSON.parse(event.data);
+    const chatBox = document.getElementById("chat-box");
+    
+    const newMessage = document.createElement("div");
+    newMessage.classList.add("chat-message");
+    newMessage.innerHTML = `
+        <div class="message-header">
+            <img src="${data.profile_picture}" class="profile-pic" alt="User Logo">
+            <strong>${data.sender}</strong> <span class="timestamp">Just now</span>
+        </div>
+        <p class="message-content">${data.message}</p>
+    `;
 
-        chatBox.appendChild(newMessage);
-        chatBox.scrollTop = chatBox.scrollHeight;
+    chatBox.appendChild(newMessage);
+    chatBox.scrollTop = chatBox.scrollHeight;
     };
 
-    document.getElementById("chat-message-submit").onclick = function() {
-        const messageInput = document.getElementById("chat-message-input");
-        const message = messageInput.value;
 
-        if (message.trim()) {
+    document.getElementById("chat-message-submit").onclick = function () {
+        const messageInput = document.getElementById("chat-message-input");
+        const message = messageInput.value.trim();
+
+        if (message) {
             chatSocket.send(JSON.stringify({
                 "message": message,
                 "sender": username
@@ -67,5 +80,88 @@
             messageInput.value = "";
         }
     };
+
+
+    document.getElementById("emoji-button").addEventListener("click", function () {
+
+        let existingPicker = document.querySelector(".emoji-picker");
+        if (existingPicker) {
+            existingPicker.remove();
+            return;
+        }
+
+
+        const picker = document.createElement("div");
+        picker.classList.add("emoji-picker");
+
+
+        const emojis = ["😀", "😃", "😄", "😁", "😆", "😅", "😂", "🤣", "😊", "😇", "😉", "😍", "😘", "😜", "🤪"];
+
+
+        emojis.forEach((emoji) => {
+            const emojiSpan = document.createElement("span");
+            emojiSpan.textContent = emoji;
+            emojiSpan.style.cursor = "pointer";
+            emojiSpan.style.padding = "5px";
+            emojiSpan.style.fontSize = "1.5rem";
+
+
+            emojiSpan.addEventListener("click", function (event) {
+                document.getElementById("chat-message-input").value += event.target.textContent;
+                picker.remove();
+            });
+
+            picker.appendChild(emojiSpan);
+        });
+
+
+        const buttonRect = this.getBoundingClientRect();
+        picker.style.position = "absolute";
+        picker.style.top = `${buttonRect.bottom + window.scrollY}px`;
+        picker.style.left = `${buttonRect.left + window.scrollX}px`;
+        picker.style.background = "white";
+        picker.style.padding = "10px";
+        picker.style.border = "1px solid #ccc";
+        picker.style.borderRadius = "5px";
+        picker.style.display = "flex";
+        picker.style.gap = "5px";
+        picker.style.boxShadow = "0 2px 10px rgba(0,0,0,0.2)";
+
+        document.body.appendChild(picker);
+    });
+
+
 </script>
+
+<style>
+    .chat-box {
+        max-height: 400px;
+        overflow-y: auto;
+        border: 1px solid #ccc;
+        padding: 10px;
+    }
+
+    .message-content {
+        font-size: 16px;
+        white-space: pre-wrap;
+    }
+
+    .emoji-picker {
+        position: absolute;
+        background: white;
+        padding: 5px;
+        border: 1px solid #ccc;
+        cursor: pointer;
+    }
+
+    .profile-pic {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
+</style>
 {% endblock %}

@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>Manage Users in "{{ room.name }}"</h2>
+
+    <a href="{% url 'room_detail' room.id %}" class="btn btn-secondary">⬅ Back to Room</a>
+
+    <ul class="user-list">
+        {% for user in users %}
+        <li class="user-item">
+            <strong>{{ user.username }}</strong>
+
+            {% if request.user == room.moderator and user != room.moderator %}
+            <a href="{% url 'remove_user_from_room' room.id user.id %}" class="btn btn-danger btn-sm">
+                Remove
+            </a>
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+
+<style>
+    .user-list {
+        list-style: none;
+        padding: 0;
+    }
+
+    .user-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid #ddd;
+        padding: 10px;
+    }
+
+    .profile-pic {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 10px;
+    }
+</style>
+{% endblock %}

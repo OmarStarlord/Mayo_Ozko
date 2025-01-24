@@ -69,3 +69,35 @@ def room_list(request):
     # Get all rooms that the user is a part of
     rooms = Room.objects.filter(users=request.user)
     return render(request, "rooms/room_list.html", {"rooms": rooms})
+
+
+
+@login_required
+def manage_room_users(request, room_id):
+    room = get_object_or_404(Room, id=room_id)
+
+    if request.user != room.moderator:
+        messages.error(request, "Only the room moderator can manage users.")
+        return redirect("room_detail", room_id=room.id)
+
+    users_in_room = room.users.all()
+
+    return render(request, "rooms/manage_users.html", {"room": room, "users": users_in_room})
+
+
+@login_required
+def remove_user_from_room(request, room_id, user_id):
+    room = get_object_or_404(Room, id=room_id)
+    user_to_remove = get_object_or_404(User, id=user_id)
+
+    if request.user != room.moderator:
+        messages.error(request, "Only the room moderator can remove users.")
+        return redirect("manage_room_users", room_id=room.id)
+
+    if user_to_remove == room.moderator:
+        messages.error(request, "You cannot remove yourself as the moderator.")
+    else:
+        room.users.remove(user_to_remove)
+        messages.success(request, f"{user_to_remove.username} has been removed from the room.")
+
+    return redirect("manage_room_users", room_id=room.id)
