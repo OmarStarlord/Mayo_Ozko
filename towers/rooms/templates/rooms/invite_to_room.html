@@ -1,10 +1,15 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h2>Invite User to Room: {{ room.name }}</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Invite User</button>
-    </form>
+<div class="invite-page">
+    <div class="form-container">
+        <h2 class="form-title">Invite User to Room</h2>
+        <p class="room-name">Room: <strong>{{ room.name }}</strong></p>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary btn-block">Invite User</button>
+        </form>
+    </div>
+</div>
 {% endblock %}

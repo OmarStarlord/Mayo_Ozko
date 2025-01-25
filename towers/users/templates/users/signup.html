@@ -1,9 +1,78 @@
 {% extends "base.html" %}
+
 {% block content %}
-<h2>Sign Up</h2>
-<form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Sign Up</button>
-</form>
+    <div class="signup-page">
+        <div class="form-container">
+            <h2>Sign Up</h2>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <!-- Username Field -->
+                <div class="form-group">
+                    <label for="id_username">Username:</label>
+                    {{ form.username }}
+                    <small class="validation-text">
+                        {{ form.username.help_text }}
+                    </small>
+                    {% if form.username.errors %}
+                        <div class="error-text">
+                            {{ form.username.errors|striptags }}
+                        </div>
+                    {% endif %}
+                </div>
+            
+                <!-- Email Field -->
+                <div class="form-group">
+                    <label for="id_email">Email:</label>
+                    {{ form.email }}
+                    {% if form.email.errors %}
+                        <div class="error-text">
+                            {{ form.email.errors|striptags }}
+                        </div>
+                    {% endif %}
+                </div>
+            
+                <!-- Password Field -->
+                <div class="form-group">
+                    <label for="id_password1">Password:</label>
+                    {{ form.password1 }}
+                    <small class="validation-text">
+                        {{ form.password1.help_text }}
+                    </small>
+                    {% if form.password1.errors %}
+                        <div class="error-text">
+                            {{ form.password1.errors|striptags }}
+                        </div>
+                    {% endif %}
+                </div>
+            
+                <!-- Password Confirmation Field -->
+                <div class="form-group">
+                    <label for="id_password2">Confirm Password:</label>
+                    {{ form.password2 }}
+                    {% if form.password2.errors %}
+                        <div class="error-text">
+                            {{ form.password2.errors|striptags }}
+                        </div>
+                    {% endif %}
+                </div>
+            
+                <!-- Profile Picture Upload -->
+                <div class="form-group">
+                    <label for="id_profile_pic">Profile Picture:</label>
+                    {{ form.profile_pic }}
+                    {% if form.profile_pic.errors %}
+                        <div class="error-text">
+                            {{ form.profile_pic.errors|striptags }}
+                        </div>
+                    {% endif %}
+                </div>
+            
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-primary" id="signup">Sign Up</button>
+            </form>
+            
+            
+        </div>
+    </div>
 {% endblock %}

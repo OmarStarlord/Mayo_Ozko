@@ -20,7 +20,7 @@ class SignupForm(UserCreationForm):
         fields = ["username", "email", "password1", "password2", "profile_pic"]
 
 class CustomLoginView(LoginView):
-    template_name = 'login.html'  
+    template_name = 'users/login.html'  
     
     def get_success_url(self):
         return reverse_lazy('room_list')
@@ -58,11 +58,14 @@ def edit_profile(request):
         form = EditProfileForm(instance=request.user)
     return render(request, 'users/edit_profile.html', {'form': form})
 
-class CustomLoginView(LoginView):
-    template_name = 'users/login.html'  
-    
-    def get_success_url(self):
-        return reverse_lazy('room_list')  # Redirect to room_list after successful login
+class CustomLoginForm(AuthenticationForm):
+    username = forms.CharField(widget=forms.TextInput(attrs={
+        'class': 'form-control', 'placeholder': 'Enter your username'
+    }))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={
+        'class': 'form-control', 'placeholder': 'Enter your password'
+    }))
+
 
 
 # Call logout function
