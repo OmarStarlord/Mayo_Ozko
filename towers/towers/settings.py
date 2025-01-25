@@ -11,9 +11,22 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
-
+import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
+
+
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Static files (CSS, JavaScript, Images)
+STATIC_URL = '/static/'  # URL prefix for static files
+
+# Directory for project-wide static files
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),  # Path to your 'static' folder
+]
+
+# Directory where static files will be collected when running `collectstatic`
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Production use
 
 
 # Quick-start development settings - unsuitable for production

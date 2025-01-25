@@ -20,19 +20,23 @@
         <h3>Chat Messages</h3>
         <div id="chat-box" class="chat-box">
             {% for message in messages %}
-            <div class="chat-message">
+            <div class="chat-message {% if message.sender == request.user %}user{% else %}friend{% endif %}">
                 <div class="message-header">
-                    <img src="{{ message.sender.profile_pic.url }}" class="profile-pic">
+                    {% if message.sender.profile_pic %}
+                        <img src="{{ message.sender.profile_pic.url }}" class="profile-pic" alt="Profile Picture">
+                    {% else %}
+                        <img src="path/to/default/image.jpg" class="profile-pic" alt="Default Profile Picture">
+                    {% endif %}
                     <strong>{{ message.sender.username }}</strong>
-                    <span class="timestamp">{{ message.timestamp }}</span>
                 </div>
                 <p class="message-content">{{ message.content }}</p>
+                <span class="timestamp">{{ message.timestamp }}</span>
             </div>
+            
             {% empty %}
             <p class="no-messages">No messages yet. Be the first to start the conversation! 😊</p>
             {% endfor %}
-        </div>
-
+        </div>        
     </div>
 
     <!-- Message Input Form -->
@@ -133,35 +137,4 @@
 
 </script>
 
-<style>
-    .chat-box {
-        max-height: 400px;
-        overflow-y: auto;
-        border: 1px solid #ccc;
-        padding: 10px;
-    }
-
-    .message-content {
-        font-size: 16px;
-        white-space: pre-wrap;
-    }
-
-    .emoji-picker {
-        position: absolute;
-        background: white;
-        padding: 5px;
-        border: 1px solid #ccc;
-        cursor: pointer;
-    }
-
-    .profile-pic {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-right: 10px;
-    vertical-align: middle;
-}
-
-</style>
 {% endblock %}
