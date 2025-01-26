@@ -17,7 +17,7 @@ def create_room(request):
             room.save()
             room.users.add(request.user)  # Auto-add creator to the room
             messages.success(request, f"Room '{room.name}' created successfully!")
-            return redirect("rooms/room_detail", room_id=room.id)
+            return redirect("room_detail", room_id=room.id)
     else:
         form = RoomForm()
     return render(request, "rooms/create_room.html", {"form": form})

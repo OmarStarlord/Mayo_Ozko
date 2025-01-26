@@ -3,6 +3,10 @@
 import os
 import sys
 
+from towers.wsgi import application
+
+app = application  # or `handler` depending on your framework
+
 
 def main():
     """Run administrative tasks."""
