@@ -1,33 +1,17 @@
 {
-  "version": 2,
   "builds": [
     {
-      "src": "manage.py",
-      "use": "@vercel/python"
+      "src": "towers/manage.py",
+      "use": "@vercel/python",
+      "config": {
+        "maxDuration": 10
+      }
     }
   ],
   "routes": [
     {
-      "src": "/static/(.*)",
-      "dest": "/static/$1"
-    },
-    {
       "src": "/(.*)",
-      "dest": "/manage.py"
+      "dest": "towers/wsgi.py"
     }
-  ],
-  "env": {
-    "DJANGO_SETTINGS_MODULE": "towers.settings",
-    "SECRET_KEY": "django-insecure-=o5gq48g#u)wdn@03rx9zfa2qrxvby&3engiltsg^@mm7^eq=*"
-  },
-  "build": {
-    "env": {
-      "DJANGO_SETTINGS_MODULE": "towers.settings",
-      "SECRET_KEY": "django-insecure-=o5gq48g#u)wdn@03rx9zfa2qrxvby&3engiltsg^@mm7^eq=*"
-    },
-    "commands": [
-      "pip install -r requirements.txt",
-      "python manage.py collectstatic --noinput"
-    ]
-  }
+  ]
 }
