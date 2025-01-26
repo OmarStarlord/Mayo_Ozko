@@ -20,14 +20,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'  # URL prefix for static files
 
-# Directory for project-wide static files
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),  # Path to your 'static' folder
-]
-
-# Directory where static files will be collected when running `collectstatic`
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Production use
-
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
@@ -38,7 +32,7 @@ SECRET_KEY = "django-insecure-=o5gq48g#u)wdn@03rx9zfa2qrxvby&3engiltsg^@mm7^eq=*
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 

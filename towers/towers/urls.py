@@ -20,7 +20,8 @@ from django.urls import path, include
 urlpatterns = [
     # Admin Panel URL
     path('admin/', admin.site.urls),
-    
+    # i want the index to take me to the users login page
+    path('', include('users.urls')),
     # Include URLs from the 'users' app
     path('users/', include('users.urls')),  
     
