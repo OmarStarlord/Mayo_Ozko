@@ -10,8 +10,5 @@
       "src": "/(.*)",
       "dest": "manage.py"
     }
-  ],
-  "hooks": {
-    "build": "python manage.py migrate"
-  }
+  ]
 }
