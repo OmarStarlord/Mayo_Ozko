@@ -1,9 +1,5 @@
-#build_files.sh
-
-
-echo "BUILD START"
-
-python3.11.5 -m pip install -r requirements.txt
-python3.11.5 manage.py collectstatic --noinput --clear
-
-echo "BUILD END"
+#!/bin/bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+python manage.py collectstatic --noinput
