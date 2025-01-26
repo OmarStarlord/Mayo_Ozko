@@ -18,10 +18,16 @@ import os
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Static files (CSS, JavaScript, Images)
-STATIC_URL = '/static/'  # URL prefix for static files
 
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_URL = "static/"
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
+
+STATIC_ROOT = os.path.join(BASE_DIR /'staticfiles','staticfiles_build','static')
+
+ALLOWED_HOSTS = ['127.0.0.1','localhost', ".vercel.app"]
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
@@ -32,7 +38,7 @@ SECRET_KEY = "django-insecure-=o5gq48g#u)wdn@03rx9zfa2qrxvby&3engiltsg^@mm7^eq=*
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+
 
 
 

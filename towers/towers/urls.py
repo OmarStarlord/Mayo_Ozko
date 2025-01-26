@@ -16,12 +16,13 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path, include
+from users.views import CustomLoginView
 
 urlpatterns = [
     # Admin Panel URL
     path('admin/', admin.site.urls),
     # i want the index to take me to the users login page
-    path('', include('users.urls')),
+    path('', CustomLoginView.as_view(), name='login'),
     # Include URLs from the 'users' app
     path('users/', include('users.urls')),  
     
