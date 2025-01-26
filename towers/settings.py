@@ -26,7 +26,7 @@ STATICFILES_DIRS = [
 
 STATIC_ROOT = os.path.join(BASE_DIR /'staticfiles','staticfiles_build','static')
 
-ALLOWED_HOSTS = ["omarstar.alwaysdata.net"]
+ALLOWED_HOSTS = ["*"]
 
 
 # Quick-start development settings - unsuitable for production
