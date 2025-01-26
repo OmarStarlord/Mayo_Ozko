@@ -1,17 +1,14 @@
 {
   "builds": [
     {
-      "src": "towers/manage.py",
+      "src": "manage.py",
       "use": "@vercel/python",
       "config": {
         "maxDuration": 10
       }
     }
   ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "towers/wsgi.py"
-    }
-  ]
+  "env": {
+    "DJANGO_SETTINGS_MODULE": "towers.settings"
+  }
 }
