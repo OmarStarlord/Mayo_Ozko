@@ -2,14 +2,13 @@
   "builds": [
     {
       "src": "manage.py",
-      "use": "@vercel/python",
-      "config": {
-        "maxDuration": 10
-      }
+      "use": "@vercel/python"
     }
   ],
-  "env": {
-    "DJANGO_SETTINGS_MODULE": "towers.settings"
-  },
-  "buildCommand": "python manage.py collectstatic --noinput"
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "manage.py"
+    }
+  ]
 }
