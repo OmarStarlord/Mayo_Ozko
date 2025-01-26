@@ -26,7 +26,7 @@ STATICFILES_DIRS = [
 
 STATIC_ROOT = os.path.join(BASE_DIR /'staticfiles','staticfiles_build','static')
 
-ALLOWED_HOSTS = ['127.0.0.1','localhost', ".vercel.app"]
+ALLOWED_HOSTS = ["*"]
 
 
 # Quick-start development settings - unsuitable for production
