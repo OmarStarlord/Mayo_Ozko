@@ -109,12 +109,22 @@ LOGIN_REDIRECT_URL = "/users/edit-profile/"
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+import os
+
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('DB_NAME', 'neondb'),  # Your database name
+        'USER': os.getenv('DB_USER', 'neondb_owner'),  # Your database user
+        'PASSWORD': os.getenv('DB_PASSWORD', 'npg_EcIsG8FeRm1X'),  # Your database password
+        'HOST': os.getenv('DB_HOST', 'ep-flat-bonus-a2hn0r60-pooler.eu-central-1.aws.neon.tech'),  # Your database host
+        'PORT': os.getenv('DB_PORT', '5432'),  # Default PostgreSQL port
+        'OPTIONS': {
+            'sslmode': 'require',
+        },
     }
 }
+
 
 
 # Password validation
