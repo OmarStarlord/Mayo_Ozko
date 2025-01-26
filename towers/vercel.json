@@ -2,16 +2,8 @@
   "version": 2,
   "builds": [
     {
-      "src": "mysite/wsgi.py",
-      "use": "@vercel/python",
-      "config": { "maxLambdaSize": "15mb", "runtime": "python3.11.5" }
-    },
-    {
-      "src": "build_files.sh",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "staticfiles_build"
-      }
+      "src": "manage.py",
+      "use": "@vercel/python"
     }
   ],
   "routes": [
@@ -21,7 +13,21 @@
     },
     {
       "src": "/(.*)",
-      "dest": "towers/wsgi.py"
+      "dest": "/manage.py"
     }
-  ] 
+  ],
+  "env": {
+    "DJANGO_SETTINGS_MODULE": "towers.settings",
+    "SECRET_KEY": "django-insecure-=o5gq48g#u)wdn@03rx9zfa2qrxvby&3engiltsg^@mm7^eq=*"
+  },
+  "build": {
+    "env": {
+      "DJANGO_SETTINGS_MODULE": "towers.settings",
+      "SECRET_KEY": "django-insecure-=o5gq48g#u)wdn@03rx9zfa2qrxvby&3engiltsg^@mm7^eq=*"
+    },
+    "commands": [
+      "pip install -r requirements.txt",
+      "python manage.py collectstatic --noinput"
+    ]
+  }
 }
