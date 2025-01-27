@@ -7,43 +7,36 @@
         <p>Created by <strong>{{ room.moderator.username }}</strong> on {{ room.date_created }}</p>
         <a href="{% url 'invite_to_room' room.id %}" class="btn btn-primary">+ Invite Users</a>
         {% if request.user == room.moderator %}
-<a href="{% url 'manage_room_users' room.id %}" class="btn btn-warning">Manage Users</a>
-{% endif %}
-   
+            <a href="{% url 'manage_room_users' room.id %}" class="btn btn-warning">Manage Users</a>
+        {% endif %}
     </div>
-
-
-
 
     <!-- Chat Messages Section -->
     <div class="chat-section">
         <h3>Chat Messages</h3>
         <div id="chat-box" class="chat-box">
             {% for message in messages %}
-            <div class="chat-message {% if message.sender == request.user %}user{% else %}friend{% endif %}">
-                <div class="message-header">
-                    {% if message.sender.profile_pic %}
-                        <img src="{{ message.sender.profile_pic.url }}" class="profile-pic" alt="Profile Picture">
-                    {% else %}
-                        <img src="path/to/default/image.jpg" class="profile-pic" alt="Default Profile Picture">
-                    {% endif %}
-                    <strong>{{ message.sender.username }}</strong>
+                <div class="chat-message {% if message.sender == request.user %}user{% else %}friend{% endif %}">
+                    <div class="message-header">
+                        <img src="{{ message.sender.profile_pic.url if message.sender.profile_pic else '/static/images/default.png' }}" 
+                             class="profile-pic" 
+                             alt="Profile Picture">
+                        <strong>{{ message.sender.username }}</strong>
+                    </div>
+                    <p class="message-content">{{ message.content }}</p>
+                    <span class="timestamp">{{ message.timestamp }}</span>
                 </div>
-                <p class="message-content">{{ message.content }}</p>
-                <span class="timestamp">{{ message.timestamp }}</span>
-            </div>
-            
             {% empty %}
-            <p class="no-messages">No messages yet. Be the first to start the conversation! 😊</p>
+                <p class="no-messages">No messages yet. Be the first to start the conversation! 😊</p>
             {% endfor %}
-        </div>        
+        </div>
     </div>
 
     <!-- Message Input Form -->
     <div class="message-form-container">
         <textarea id="chat-message-input" class="message-input" placeholder="Type a message..." required></textarea>
         <button id="chat-message-submit" class="btn btn-success">Send</button>
-        <button id="emoji-button">😊</button>
+        <button id="emoji-button" class="btn btn-secondary">😊</button>
     </div>
 </div>
 
@@ -51,74 +44,86 @@
 <script>
     const roomId = "{{ room.id }}";
     const username = "{{ request.user.username }}";
-    const chatSocket = new WebSocket(`ws://${window.location.host}/ws/room/${roomId}/`);
 
-    chatSocket.onmessage = function(event) {
-    const data = JSON.parse(event.data);
-    const chatBox = document.getElementById("chat-box");
-    
-    const newMessage = document.createElement("div");
-    newMessage.classList.add("chat-message");
-    newMessage.innerHTML = `
-        <div class="message-header">
-            <img src="${data.profile_picture}" class="profile-pic" alt="User Logo">
-            <strong>${data.sender}</strong> <span class="timestamp">Just now</span>
-        </div>
-        <p class="message-content">${data.message}</p>
-    `;
+    // Initialize Pusher
+    Pusher.logToConsole = true;
+    const pusher = new Pusher('b47d20482e4df2bf538c', {
+        cluster: 'eu',
+        forceTLS: true
+    });
 
-    chatBox.appendChild(newMessage);
-    chatBox.scrollTop = chatBox.scrollHeight;
-    };
+    // Subscribe to the room's channel
+    const channel = pusher.subscribe(`chat_${roomId}`);
 
+    // Listen for new messages
+    channel.bind('new_message', function(data) {
+        const chatBox = document.getElementById("chat-box");
 
-    document.getElementById("chat-message-submit").onclick = function () {
+        const newMessage = document.createElement("div");
+        newMessage.classList.add("chat-message");
+        newMessage.innerHTML = `
+            <div class="message-header">
+                <img src="${data.profile_picture}" class="profile-pic" alt="Profile Picture">
+                <strong>${data.sender}</strong> <span class="timestamp">Just now</span>
+            </div>
+            <p class="message-content">${data.message}</p>
+        `;
+
+        chatBox.appendChild(newMessage);
+        chatBox.scrollTop = chatBox.scrollHeight; // Scroll to the bottom
+    });
+
+    // Send message to the WebSocket
+    document.getElementById("chat-message-submit").onclick = function() {
         const messageInput = document.getElementById("chat-message-input");
         const message = messageInput.value.trim();
 
         if (message) {
-            chatSocket.send(JSON.stringify({
-                "message": message,
-                "sender": username
-            }));
-            messageInput.value = "";
+            fetch(`/send_message/`, { // Send a request to your backend to create a message
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({
+                    message: message,
+                    sender: username,
+                    room_id: roomId
+                })
+            });
+            messageInput.value = ""; // Clear input field after sending
         }
     };
 
-
+    // Emoji picker functionality
     document.getElementById("emoji-button").addEventListener("click", function () {
-
         let existingPicker = document.querySelector(".emoji-picker");
         if (existingPicker) {
-            existingPicker.remove();
+            existingPicker.remove(); // Close picker if already open
             return;
         }
-
 
         const picker = document.createElement("div");
         picker.classList.add("emoji-picker");
 
-
         const emojis = ["😀", "😃", "😄", "😁", "😆", "😅", "😂", "🤣", "😊", "😇", "😉", "😍", "😘", "😜", "🤪"];
 
-
-        emojis.forEach((emoji) => {
+        emojis.forEach(emoji => {
             const emojiSpan = document.createElement("span");
             emojiSpan.textContent = emoji;
             emojiSpan.style.cursor = "pointer";
             emojiSpan.style.padding = "5px";
             emojiSpan.style.fontSize = "1.5rem";
 
-
-            emojiSpan.addEventListener("click", function (event) {
+            emojiSpan.addEventListener("click", function(event) {
                 document.getElementById("chat-message-input").value += event.target.textContent;
-                picker.remove();
+                picker.remove(); // Close emoji picker after selection
             });
 
             picker.appendChild(emojiSpan);
         });
 
-
+        // Positioning the emoji picker near the button
         const buttonRect = this.getBoundingClientRect();
         picker.style.position = "absolute";
         picker.style.top = `${buttonRect.bottom + window.scrollY}px`;
@@ -133,8 +138,6 @@
 
         document.body.appendChild(picker);
     });
-
-
 </script>
 
 {% endblock %}
