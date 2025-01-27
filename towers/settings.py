@@ -39,7 +39,7 @@ SECRET_KEY = "django-insecure-=o5gq48g#u)wdn@03rx9zfa2qrxvby&3engiltsg^@mm7^eq=*
 DEBUG = True
 
 
-
+import pusher
 PUSHER = {
     'app_id': '1931997',
     'key': 'b47d20482e4df2bf538c',

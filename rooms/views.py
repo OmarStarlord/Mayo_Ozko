@@ -64,42 +64,30 @@ def room_detail(request, room_id):
 
 @login_required
 def send_message(request, room_id):
-    # Get the room object, or return 404 if not found
-    room = get_object_or_404(Room, id=room_id)
+    if request.method == 'POST':
+        message_content = request.POST.get('message')
 
-    if request.method == "POST":
-        # Get the content from the form
-        content = request.POST.get("content")
+        # Assuming you have a Message model to save the message
+        room = Room.objects.get(id=room_id)
+        message = Message.objects.create(
+            room=room,
+            sender=request.user,
+            content=message_content
+        )
 
-        if content:
-            try:
-                # Start a database transaction to ensure atomicity
-                with transaction.atomic():
-                    # Create the new message in the database
-                    message = Message.objects.create(room=room, sender=request.user, content=content)
+        # Broadcast the message to Pusher
+        pusher_client.trigger(
+            f'chat_{room_id}',  # The channel
+            'new_message',  # The event name
+            {
+                'sender': request.user.username,
+                'message': message.content,
+                'timestamp': message.timestamp.strftime('%Y-%m-%d %H:%M:%S')
+            }
+        )
 
-                    # Trigger Pusher event to notify all users in the room
-                    pusher_client.trigger(
-                        f"chat_{room.id}",  # Pusher channel for the room
-                        "new_message",      # Event name
-                        {
-                            "message": message.content,
-                            "sender": message.sender.username,
-                            "profile_picture_base64": message.sender.profile_pic_base64.url if message.sender.profile_pic_base64 else "/static/images/default.png"
-                        }
-                    )
-
-                # Redirect to room detail page after saving and triggering event
-                return redirect("room_detail", room_id=room.id)
-
-            except Exception as e:
-                print(f"Error saving message: {e}")
-                # If there's an error, redirect to the room detail page
-                return redirect("room_detail", room_id=room.id)
-
-    # If not a POST request, just redirect to the room detail page
-    return redirect("room_detail", room_id=room.id)
-
+        return JsonResponse({'status': 'Message sent!'})
+    return JsonResponse({'error': 'Invalid request'}, status=400)
 @login_required
 def room_list(request):
     # Get all rooms the user is part of
