@@ -7,8 +7,8 @@ urlpatterns = [
     path("<int:room_id>/invite/", invite_to_room, name="invite_to_room"),
     path("<int:room_id>/send_message/", send_message, name="send_message"),
     path("", room_list, name="room_list"),
-    path("rooms/<int:room_id>/remove_user/<int:user_id>/", remove_user_from_room, name="remove_user_from_room"),
     path("room/<int:room_id>/manage-users/", manage_room_users, name="manage_room_users"),
-    path("room/<int:room_id>/remove/<int:user_id>/", remove_user_from_room, name="remove_user_from_room"),
+    path("<int:room_id>/remove/<int:user_id>/", remove_user_from_room, name="remove_user_from_room"),
+
 
 ]
