@@ -1,14 +1,18 @@
 {
   "builds": [
     {
-      "src": "manage.py",
-      "use": "@vercel/python"
+      "src": "towers/wsgi.py",
+      "use": "@vercel/python",
+      "config": {
+        "includeFiles": ["**/*.txt", "**/*.po", "**/*.mo"]
+      }
     }
   ],
   "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "manage.py"
-    }
-  ]
+    { "src": "/static/(.*)", "dest": "/static/$1" },
+    { "src": "/(.*)", "dest": "towers/wsgi.py" }
+  ],
+  "build": {
+    "cmd": "python manage.py migrate --noinput && python manage.py collectstatic --noinput"
+  }
 }
