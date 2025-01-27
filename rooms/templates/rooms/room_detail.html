@@ -78,17 +78,18 @@
 
         if (message) {
             // Send a request to your backend to create a message
-            fetch(`/send_message/${roomId}/`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': csrfToken  // Include CSRF token in the request
-                },
-                body: JSON.stringify({
-                    message: message,
-                    room_id: roomId,
-                })
-            })
+            fetch(`/{{ room.id }}/send_message/`, {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrfToken
+    },
+    body: JSON.stringify({
+        message: message,
+        room_id: roomId,
+    })
+})
+
             .then(response => {
                 if (response.ok) {
                     messageInput.value = "";  // Clear input field after sending
