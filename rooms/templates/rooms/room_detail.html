@@ -49,9 +49,9 @@
                 <button id="chat-message-submit" class="btn btn-success">
                     <i class="fas fa-paper-plane"></i> Send
                 </button>
-                <button id="emoji-button" class="btn btn-secondary" type="button">
-                    😊
-                </button>
+                <button id="emoji-button" class="btn btn-secondary" type="button">😊</button>
+                <emoji-picker id="emoji-picker" style="display: none;"></emoji-picker>
+
             </div>
         </div>
     </div>
@@ -63,5 +63,6 @@
 
 <!-- Script loading with proper order -->
 <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
+<script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
 <script src="{% static 'js/script.js' %}"></script>
 {% endblock %}

@@ -65,5 +65,29 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
     );
+
+
+    const emojiButton = document.getElementById("emoji-button");
+    const emojiPicker = document.getElementById("emoji-picker");
+    const messageInput = document.getElementById("chat-message-input");
+
+    emojiButton.addEventListener("click", function () {
+        // Toggle emoji picker visibility
+        emojiPicker.style.display = emojiPicker.style.display === "none" ? "block" : "none";
+    });
+
+    emojiPicker.addEventListener("emoji-click", event => {
+        const emoji = event.detail.unicode; // Get the selected emoji
+        messageInput.value += emoji; // Append emoji to the input field
+    });
+
+    // Hide the emoji picker if clicking outside
+    document.addEventListener("click", function (event) {
+        if (!emojiButton.contains(event.target) && !emojiPicker.contains(event.target)) {
+            emojiPicker.style.display = "none";
+        }
+    });
 }
+
+
 );

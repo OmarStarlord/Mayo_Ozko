@@ -607,3 +607,13 @@ input, select, textarea {
     border: 1px solid #ddd;
     resize: vertical;
 }
+
+
+emoji-picker {
+  position: absolute;
+  bottom: 50px;
+  left: 10px;
+  width: 300px;
+  height: 350px;
+  z-index: 1000;
+}
