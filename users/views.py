@@ -14,10 +14,20 @@ User = get_user_model()
 
 class SignupForm(UserCreationForm):
     email = forms.EmailField(required=True)
+    profile_pic = forms.ImageField(required=False)  # Add this line
 
     class Meta:
         model = User
-        fields = ["username", "email", "password1", "password2", "profile_pic_base64"]
+        fields = ["username", "email", "password1", "password2"] 
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        profile_pic = self.cleaned_data.get('profile_pic')
+        if profile_pic:
+            user.set_profile_pic(profile_pic)
+        if commit:
+            user.save()
+        return user
 
 class CustomLoginView(LoginView):
     template_name = 'users/login.html'  
