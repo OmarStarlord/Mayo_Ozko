@@ -38,36 +38,38 @@
 </div>
 
 <!-- WebSocket JavaScript -->
+<script src="https://js.pusher.com/7.0/pusher.min.js"></script>
 <script>
-    const roomId = "{{ room.id }}";
-const username = "{{ request.user.username }}";
+    const roomId = "{{ room.id }}";  // Dynamically get the room ID from the Django context
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;  // CSRF token from Django template
+    const username = "{{ request.user.username }}";  // Get the current user's username
 
-// Initialize Pusher
-const pusher = new Pusher('your-pusher-key', {
-    cluster: 'your-cluster',
-    forceTLS: true
-});
+    // Initialize Pusher
+    const pusher = new Pusher('your-pusher-key', {
+        cluster: 'your-cluster',
+        forceTLS: true
+    });
 
-// Subscribe to the room's channel
-const channel = pusher.subscribe(`chat_${roomId}`);
+    // Subscribe to the room's channel
+    const channel = pusher.subscribe(`chat_${roomId}`);
 
-// Listen for new messages
-channel.bind('new_message', function(data) {
-    const chatBox = document.getElementById("chat-box");
+    // Listen for new messages
+    channel.bind('new_message', function(data) {
+        const chatBox = document.getElementById("chat-box");
 
-    const newMessage = document.createElement("div");
-    newMessage.classList.add("chat-message");
-    newMessage.innerHTML = `
-        <div class="message-header">
-            <strong>${data.sender}</strong> <span class="timestamp">Just now</span>
-        </div>
-        <p class="message-content">${data.message}</p>
-    `;
+        const newMessage = document.createElement("div");
+        newMessage.classList.add("chat-message");
+        newMessage.classList.add(data.sender === username ? "user" : "friend");
+        newMessage.innerHTML = `
+            <div class="message-header">
+                <strong>${data.sender}</strong> <span class="timestamp">Just now</span>
+            </div>
+            <p class="message-content">${data.message}</p>
+        `;
 
-    chatBox.appendChild(newMessage);
-    chatBox.scrollTop = chatBox.scrollHeight; // Scroll to the bottom
-});
-
+        chatBox.appendChild(newMessage);
+        chatBox.scrollTop = chatBox.scrollHeight; // Scroll to the bottom
+    });
 
     // Send message to the WebSocket
     document.getElementById("chat-message-submit").onclick = function() {
@@ -75,19 +77,25 @@ channel.bind('new_message', function(data) {
         const message = messageInput.value.trim();
 
         if (message) {
-            fetch(`/send_message/`, { // Send a request to your backend to create a message
+            // Send a request to your backend to create a message
+            fetch(`/send_message/${roomId}/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    'X-CSRFToken': csrfToken  // Include CSRF token in the request
                 },
                 body: JSON.stringify({
                     message: message,
-                    sender: username,
-                    room_id: roomId
+                    room_id: roomId,
                 })
+            })
+            .then(response => {
+                if (response.ok) {
+                    messageInput.value = "";  // Clear input field after sending
+                } else {
+                    console.error('Error sending message');
+                }
             });
-            messageInput.value = ""; // Clear input field after sending
         }
     };
 
