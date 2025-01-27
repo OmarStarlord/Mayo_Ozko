@@ -5,6 +5,7 @@ from django.contrib import messages
 from .models import Room, Message
 from .forms import RoomForm, InviteUserForm
 from django.contrib.auth import get_user_model
+from django.db import transaction
 import pusher
 
 User = get_user_model()
@@ -59,30 +60,50 @@ def room_detail(request, room_id):
     messages = room.messages.all().order_by("timestamp")
     return render(request, "rooms/room_detail.html", {"room": room, "messages": messages})
 
+pusher_client = pusher.Pusher(
+    app_id=settings.PUSHER['app_id'],
+    key=settings.PUSHER['key'],
+    secret=settings.PUSHER['secret'],
+    cluster=settings.PUSHER['cluster'],
+    ssl=settings.PUSHER['ssl']
+)
+
 @login_required
 def send_message(request, room_id):
+    # Get the room object, or return 404 if not found
     room = get_object_or_404(Room, id=room_id)
 
     if request.method == "POST":
+        # Get the content from the form
         content = request.POST.get("content")
+
         if content:
-            # Create the message in the database
-            message = Message.objects.create(room=room, sender=request.user, content=content)
+            try:
+                # Start a database transaction to ensure atomicity
+                with transaction.atomic():
+                    # Create the new message in the database
+                    message = Message.objects.create(room=room, sender=request.user, content=content)
 
-            # Trigger Pusher event to notify all users in the room
-            pusher_client.trigger(
-                f"chat_{room.id}",  # The Pusher channel for this room
-                "new_message",      # Event name
-                {
-                    "message": message.content,
-                    "sender": message.sender.username,
-                    "profile_picture_base64": message.sender.profile_pic_base64.url if message.sender.profile_pic_base64 else "/static/images/default.png"
-                }
-            )
+                    # Trigger Pusher event to notify all users in the room
+                    pusher_client.trigger(
+                        f"chat_{room.id}",  # Pusher channel for the room
+                        "new_message",      # Event name
+                        {
+                            "message": message.content,
+                            "sender": message.sender.username,
+                            "profile_picture_base64": message.sender.profile_pic_base64.url if message.sender.profile_pic_base64 else "/static/images/default.png"
+                        }
+                    )
 
-            # Redirect to room detail page
-            return redirect("room_detail", room_id=room.id)
+                # Redirect to room detail page after saving and triggering event
+                return redirect("room_detail", room_id=room.id)
 
+            except Exception as e:
+                print(f"Error saving message: {e}")
+                # If there's an error, redirect to the room detail page
+                return redirect("room_detail", room_id=room.id)
+
+    # If not a POST request, just redirect to the room detail page
     return redirect("room_detail", room_id=room.id)
 
 @login_required
