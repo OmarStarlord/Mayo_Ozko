@@ -40,35 +40,34 @@
 <!-- WebSocket JavaScript -->
 <script>
     const roomId = "{{ room.id }}";
-    const username = "{{ request.user.username }}";
+const username = "{{ request.user.username }}";
 
-    // Initialize Pusher
-    Pusher.logToConsole = true;
-    const pusher = new Pusher('b47d20482e4df2bf538c', {
-        cluster: 'eu',
-        forceTLS: true
-    });
+// Initialize Pusher
+const pusher = new Pusher('your-pusher-key', {
+    cluster: 'your-cluster',
+    forceTLS: true
+});
 
-    // Subscribe to the room's channel
-    const channel = pusher.subscribe(`chat_${roomId}`);
+// Subscribe to the room's channel
+const channel = pusher.subscribe(`chat_${roomId}`);
 
-    // Listen for new messages
-    channel.bind('new_message', function(data) {
-        const chatBox = document.getElementById("chat-box");
+// Listen for new messages
+channel.bind('new_message', function(data) {
+    const chatBox = document.getElementById("chat-box");
 
-        const newMessage = document.createElement("div");
-        newMessage.classList.add("chat-message");
-        newMessage.innerHTML = `
-            <div class="message-header">
-                <img src="${data.profile_picture}" class="profile-pic" alt="Profile Picture">
-                <strong>${data.sender}</strong> <span class="timestamp">Just now</span>
-            </div>
-            <p class="message-content">${data.message}</p>
-        `;
+    const newMessage = document.createElement("div");
+    newMessage.classList.add("chat-message");
+    newMessage.innerHTML = `
+        <div class="message-header">
+            <strong>${data.sender}</strong> <span class="timestamp">Just now</span>
+        </div>
+        <p class="message-content">${data.message}</p>
+    `;
 
-        chatBox.appendChild(newMessage);
-        chatBox.scrollTop = chatBox.scrollHeight; // Scroll to the bottom
-    });
+    chatBox.appendChild(newMessage);
+    chatBox.scrollTop = chatBox.scrollHeight; // Scroll to the bottom
+});
+
 
     // Send message to the WebSocket
     document.getElementById("chat-message-submit").onclick = function() {

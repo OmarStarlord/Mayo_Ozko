@@ -39,7 +39,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         room = await self.get_room(self.room_id)
 
         if sender and room:
-            profile_picture = sender.profile_pic.url if sender.profile_pic else "/static/images/default.png"
+            profile_picture_base64 = sender.profile_pic.url if sender.profile_pic else "/static/images/default.png"
 
             # Create the message and save it to the database
             message = await self.create_message(room, sender, message_content)
@@ -48,7 +48,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             pusher_client.trigger(self.room_group_name, 'new_message', {
                 'message': message_content,
                 'sender': sender.username,
-                'profile_picture': profile_picture
+                'profile_picture_base64': profile_picture_base64
             })
 
     async def chat_message(self, event):
@@ -56,7 +56,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             "message": event["message"],
             "sender": event["sender"],
-            "profile_picture": event["profile_picture"]
+            "profile_picture_base64": event["profile_picture_base64"]
         }))
 
     @staticmethod

@@ -1,3 +1,4 @@
+import pusher
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -6,6 +7,15 @@ from .forms import RoomForm, InviteUserForm
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
+
+# Initialize Pusher client
+pusher_client = pusher.Pusher(
+    app_id='1931997',
+    key='b47d20482e4df2bf538c',
+    secret='e280f4c8b43ecfff83b4',
+    cluster='eu',
+    ssl=True
+)
 
 @login_required
 def create_room(request):
@@ -28,8 +38,6 @@ def invite_to_room(request, room_id):
 
     if request.user != room.moderator:
         messages.error(request, "Only the room moderator can invite users.")
-
-        # Redirect back to the room detail page
         return redirect("room_detail", room_id=room.id)
 
     if request.method == "POST":
@@ -48,7 +56,7 @@ def invite_to_room(request, room_id):
 def room_detail(request, room_id):
     room = get_object_or_404(Room, id=room_id)
     messages = room.messages.all().order_by("timestamp")
-    return render(request, "rooms/room_detail.html", {"room": room, "messages": room.messages.all()})
+    return render(request, "rooms/room_detail.html", {"room": room, "messages": messages})
 
 @login_required
 def send_message(request, room_id):
@@ -57,20 +65,30 @@ def send_message(request, room_id):
     if request.method == "POST":
         content = request.POST.get("content")
         if content:
-            Message.objects.create(room=room, sender=request.user, content=content)
-            # WebSockets will handle live updates later
+            # Create the message in the database
+            message = Message.objects.create(room=room, sender=request.user, content=content)
+
+            # Trigger Pusher event to notify all users in the room
+            pusher_client.trigger(
+                f"chat_{room.id}",  # The Pusher channel for this room
+                "new_message",      # Event name
+                {
+                    "message": message.content,
+                    "sender": message.sender.username,
+                    "profile_picture_base64": message.sender.profile_pic_base.url if message.sender.profile_pic else "/static/images/default.png"
+                }
+            )
+
+            # Redirect to room detail page
             return redirect("room_detail", room_id=room.id)
 
-    return redirect("rooms/room_detail", room_id=room.id)
-
+    return redirect("room_detail", room_id=room.id)
 
 @login_required
 def room_list(request):
-    # Get all rooms that the user is a part of
+    # Get all rooms the user is part of
     rooms = Room.objects.filter(users=request.user)
     return render(request, "rooms/room_list.html", {"rooms": rooms})
-
-
 
 @login_required
 def manage_room_users(request, room_id):
@@ -83,7 +101,6 @@ def manage_room_users(request, room_id):
     users_in_room = room.users.all()
 
     return render(request, "rooms/manage_users.html", {"room": room, "users": users_in_room})
-
 
 @login_required
 def remove_user_from_room(request, room_id, user_id):
