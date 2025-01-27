@@ -5,6 +5,7 @@ from django.contrib import messages
 from .models import Room, Message
 from .forms import RoomForm, InviteUserForm
 from django.contrib.auth import get_user_model
+import pusher
 
 User = get_user_model()
 
