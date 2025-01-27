@@ -1,17 +1,14 @@
 {
   "builds": [
     {
-      "src": "tpwer/asgi.py",
-      "use": "@vercel/python",
-      "config": { 
-        "runtime": "python3.9",
-        "includeFiles": ["**/*.py", "**/*.txt"]
-      }
+      "src": "manage.py",
+      "use": "@vercel/python"
     }
   ],
   "routes": [
-    { "src": "/ws/(.*)", "dest": "towers/asgi.py" },
-    { "src": "/static/(.*)", "dest": "/static/$1" },
-    { "src": "/(.*)", "dest": "towers/asgi.py" }
+    {
+      "src": "/(.*)",
+      "dest": "manage.py"
+    }
   ]
 }
