@@ -9,14 +9,32 @@ https://docs.djangoproject.com/en/4.1/howto/deployment/asgi/
 
 
 
+# asgi.py
 import os
-from django.core.asgi import get_asgi_application
+import pusher
 from channels.routing import ProtocolTypeRouter, URLRouter
-from rooms.routing import websocket_urlpatterns
+from channels.auth import AuthMiddlewareStack
+from django.urls import path
+from . import consumers  # Update with your actual consumer import
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "towers.settings")
+from django.core.asgi import get_asgi_application
+from django.conf import settings
+
+# Initialize Pusher with settings
+pusher_client = pusher.Pusher(
+    app_id=settings.PUSHER['app_id'],
+    key=settings.PUSHER['key'],
+    secret=settings.PUSHER['secret'],
+    cluster=settings.PUSHER['cluster'],
+    ssl=settings.PUSHER['ssl']
+)
 
 application = ProtocolTypeRouter({
     "http": get_asgi_application(),
-    "websocket": URLRouter(websocket_urlpatterns),
+    # Add your WebSocket routing here
+    "websocket": AuthMiddlewareStack(
+        URLRouter([
+            path("ws/some_path/", consumers.YourConsumer.as_asgi()),  # Replace with your consumer
+        ])
+    ),
 })

@@ -40,7 +40,13 @@ DEBUG = True
 
 
 
-
+PUSHER = {
+    'app_id': '1931997',
+    'key': 'b47d20482e4df2bf538c',
+    'secret': 'e280f4c8b43ecfff83b4',
+    'cluster': 'eu',
+    'ssl': True,
+}
 
 
 
