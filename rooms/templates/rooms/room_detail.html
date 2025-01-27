@@ -38,6 +38,7 @@
 </div>
 
 <!-- WebSocket JavaScript -->
+<!-- WebSocket JavaScript -->
 <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
 <script>
     const roomId = "{{ room.id }}";  // Dynamically get the room ID from the Django context
@@ -62,7 +63,7 @@
         newMessage.classList.add(data.sender === username ? "user" : "friend");
         newMessage.innerHTML = `
             <div class="message-header">
-                <strong>${data.sender}</strong> <span class="timestamp">Just now</span>
+                <strong>${data.sender}</strong> <span class="timestamp">${data.timestamp}</span>
             </div>
             <p class="message-content">${data.message}</p>
         `;
@@ -79,17 +80,16 @@
         if (message) {
             // Send a request to your backend to create a message
             fetch(`/{{ room.id }}/send_message/`, {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json',
-        'X-CSRFToken': csrfToken
-    },
-    body: JSON.stringify({
-        message: message,
-        room_id: roomId,
-    })
-})
-
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                body: JSON.stringify({
+                    message: message,
+                    room_id: roomId,
+                })
+            })
             .then(response => {
                 if (response.ok) {
                     messageInput.value = "";  // Clear input field after sending
@@ -144,5 +144,6 @@
         document.body.appendChild(picker);
     });
 </script>
+
 
 {% endblock %}
