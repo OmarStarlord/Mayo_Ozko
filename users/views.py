@@ -17,7 +17,7 @@ class SignupForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ["username", "email", "password1", "password2", "profile_pic"]
+        fields = ["username", "email", "password1", "password2", "profile_pic_base64"]
 
 class CustomLoginView(LoginView):
     template_name = 'users/login.html'  
@@ -31,7 +31,7 @@ class CustomLoginView(LoginView):
 class EditProfileForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ["username", "email", "profile_pic", "first_name", "last_name"]
+        fields = ["username", "email", "profile_pic_base64", "first_name", "last_name"]
 
 def signup(request):
     if request.method == 'POST':

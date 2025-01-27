@@ -60,10 +60,10 @@
                 <!-- Profile Picture Upload -->
                 <div class="form-group">
                     <label for="id_profile_pic">Profile Picture:</label>
-                    {{ form.profile_pic }}
-                    {% if form.profile_pic.errors %}
+                    {{ form.profile_pic_base64 }}
+                    {% if form.profile_pic_base64.errors %}
                         <div class="error-text">
-                            {{ form.profile_pic.errors|striptags }}
+                            {{ form.profile_pic_base64c.errors|striptags }}
                         </div>
                     {% endif %}
                 </div>
