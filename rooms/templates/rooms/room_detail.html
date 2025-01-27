@@ -18,9 +18,6 @@
             {% for message in messages %}
                 <div class="chat-message {% if message.sender == request.user %}user{% else %}friend{% endif %}">
                     <div class="message-header">
-                        <img src="{{ message.sender.profile_pic.url if message.sender.profile_pic else '/static/images/default.png' }}" 
-                             class="profile-pic" 
-                             alt="Profile Picture">
                         <strong>{{ message.sender.username }}</strong>
                     </div>
                     <p class="message-content">{{ message.content }}</p>
