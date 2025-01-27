@@ -75,7 +75,7 @@ def send_message(request, room_id):
                 {
                     "message": message.content,
                     "sender": message.sender.username,
-                    "profile_picture_base64": message.sender.profile_pic_base.url if message.sender.profile_pic else "/static/images/default.png"
+                    "profile_picture_base64": message.sender.profile_pic_base64.url if message.sender.profile_pic_base64 else "/static/images/default.png"
                 }
             )
 

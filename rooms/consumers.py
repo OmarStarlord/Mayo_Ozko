@@ -39,7 +39,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         room = await self.get_room(self.room_id)
 
         if sender and room:
-            profile_picture_base64 = sender.profile_pic.url if sender.profile_pic else "/static/images/default.png"
+            profile_picture_base64 = sender.profile_pic_base64.url if sender.profile_picture_base64 else "/static/images/default.png"
 
             # Create the message and save it to the database
             message = await self.create_message(room, sender, message_content)
