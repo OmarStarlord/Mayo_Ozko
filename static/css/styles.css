@@ -580,3 +580,30 @@ input, select, textarea {
     box-shadow: none;
 }
 
+
+
+/* Add to styles.css */
+.button-group {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.input-group {
+    position: relative;
+    width: 100%;
+}
+
+.button-container {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.message-input {
+    width: 100%;
+    padding: 0.8rem;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    resize: vertical;
+}
