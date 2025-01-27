@@ -60,13 +60,7 @@ def room_detail(request, room_id):
     messages = room.messages.all().order_by("timestamp")
     return render(request, "rooms/room_detail.html", {"room": room, "messages": messages})
 
-pusher_client = pusher.Pusher(
-    app_id=settings.PUSHER['app_id'],
-    key=settings.PUSHER['key'],
-    secret=settings.PUSHER['secret'],
-    cluster=settings.PUSHER['cluster'],
-    ssl=settings.PUSHER['ssl']
-)
+
 
 @login_required
 def send_message(request, room_id):
