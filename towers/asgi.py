@@ -15,7 +15,7 @@ import pusher
 from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.auth import AuthMiddlewareStack
 from django.urls import path
-from . import consumers  
+from rooms import consumers  
 
 from django.core.asgi import get_asgi_application
 from django.conf import settings
@@ -34,7 +34,7 @@ application = ProtocolTypeRouter({
     # Add your WebSocket routing here
     "websocket": AuthMiddlewareStack(
         URLRouter([
-            path("ws/some_path/", consumers.YourConsumer.as_asgi()),  # Replace with your consumer
+            path("ws/some_path/", consumers.ChatConsumer.as_asgi()),  # Replace with your consumer
         ])
     ),
 })

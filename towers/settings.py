@@ -109,6 +109,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "towers.wsgi.application"
 
+
 AUTH_USER_MODEL = "users.User"
 LOGIN_URL = "/users/login/"
 LOGIN_REDIRECT_URL = "/users/edit-profile/"
